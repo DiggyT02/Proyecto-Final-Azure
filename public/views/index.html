@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>mi chatbot de dota2</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    #mensajes {
+      height: 380px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .msg-bot {
+      background: #e9ecef;
+      border-radius: 10px;
+      border-top-left-radius: 2px;
+      padding: 8px 12px;
+      max-width: 78%;
+      align-self: flex-start;
+      font-size: 14px;
+    }
+    .msg-user {
+      background: #0d6efd;
+      color: white;
+      border-radius: 10px;
+      border-top-right-radius: 2px;
+      padding: 8px 12px;
+      max-width: 78%;
+      align-self: flex-end;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Chatbot de Dota 2</h2>
+  </div>
+
+  <div class="card shadow-sm mx-auto" style="max-width: 620px;">
+
+    <div class="card-header bg-danger text-white fw-bold d-flex justify-content-between align-items-center">
+      <span>Asistente Dota 2</span>
+      <small id="tokens-badge" class="badge bg-light text-dark">tokens: 0</small>
+    </div>
+
+    <div class="card-body">
+
+      <div id="mensajes" class="border rounded bg-white p-3 mb-3">
+        <div class="msg-bot">
+          hola!! soy tu asistente de dota 2 preguntame lo que quieras sobre el juego
+        </div>
+      </div>
+
+      <div class="input-group mb-2">
+        <input
+          type="text"
+          id="input-usuario"
+          class="form-control"
+          placeholder="escribe tu pregunta..."
+          onkeydown="if(event.key==='Enter') enviar()"
+        />
+        <button id="btn-enviar" class="btn btn-danger fw-bold" onclick="enviar()">Enviar</button>
+      </div>
+
+      <!-- estado -->
+      <div id="estado" class="text-muted text-center" style="font-size:12px; min-height:16px;"></div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../frontjs/bot-dota.js"></script>
+
+</body>
+</html>
