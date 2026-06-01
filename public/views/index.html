@@ -55,6 +55,7 @@
     .nav-item-btn.active.dota         { background: #dc354522; border-left-color: #dc3545; }
     .nav-item-btn.active.resumen      { background: #0d6efd22; border-left-color: #0d6efd; }
     .nav-item-btn.active.anonimizar   { background: #19875422; border-left-color: #198754; }
+    .nav-item-btn.active.sentimientos { background: #fd7e1422; border-left-color: #fd7e14; }
 
     /* ── Main ── */
     .main {
@@ -126,6 +127,10 @@
 
     <button class="nav-item-btn anonimizar" onclick="mostrarVista('anonimizar', this)">
        Anonimizador de Datos
+    </button>
+
+    <button class="nav-item-btn sentimientos" onclick="mostrarVista('sentimientos', this)">
+       Análisis de Sentimientos
     </button>
   </aside>
 
@@ -231,6 +236,44 @@
       </div>
     </div>
 
+    <!-- Vista: Análisis de Sentimientos -->
+    <div id="vista-sentimientos" class="view">
+      <div class="card shadow-sm" style="max-width: 640px;">
+
+        <div class="card-header fw-bold text-white" style="background:#fd7e14">
+          Análisis de Sentimientos (Azure Language)
+        </div>
+
+        <div class="card-body">
+
+          <div id="contenedor-textos" class="mb-2">
+            <div class="d-flex gap-2 mb-2" id="fila-1">
+              <textarea class="form-control texto-sentimiento" rows="2"
+                placeholder="Texto 1..."></textarea>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mb-3">
+            <button class="btn btn-outline-secondary btn-sm" onclick="agregarTexto()">
+              + Añadir texto
+            </button>
+            <small class="text-muted align-self-center">máximo 5 textos</small>
+          </div>
+
+          <button id="btn-analizar" class="btn fw-bold w-100 mb-2 text-white"
+            style="background:#fd7e14; border-color:#fd7e14" onclick="analizarSentimientos()">
+            Analizar
+          </button>
+
+          <div id="estado-sentimientos" class="text-muted text-center mb-2"
+            style="font-size:12px; min-height:16px;"></div>
+
+          <div id="resultado-sentimientos"></div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -238,11 +281,13 @@
 <script src="../frontjs/bot-dota.js"></script>
 <script src="../frontjs/resumen.js"></script>
 <script src="../frontjs/anonimizar.js"></script>
+<script src="../frontjs/sentimientos.js"></script>
 <script>
   const titulos = {
-    dota:       'Chatbot Dota 2',
-    resumen:    'Resumidor de Texto',
-    anonimizar: 'Anonimizador de Datos'
+    dota:         'Chatbot Dota 2',
+    resumen:      'Resumidor de Texto',
+    anonimizar:   'Anonimizador de Datos',
+    sentimientos: 'Análisis de Sentimientos'
   };
 
   function mostrarVista(nombre, btnClickeado) {
