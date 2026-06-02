@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 exports.anonimizarTexto = async (req, res) => {
     const { texto } = req.body;
 

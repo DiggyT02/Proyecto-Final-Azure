@@ -1,3 +1,4 @@
+require('dotenv').config();
 exports.resumirTexto = async (req, res) => {
     const { texto } = req.body;
 

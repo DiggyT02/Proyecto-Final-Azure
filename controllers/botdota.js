@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 exports.botdota2 =  async(req, res) => {
     const { pregunta, historial = [] } = req.body;
 

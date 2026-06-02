@@ -1,3 +1,4 @@
+require('dotenv').config();
 exports.analizarSentimientos = async (req, res) => {
     const { textos } = req.body;
 

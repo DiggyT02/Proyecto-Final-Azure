@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 exports.analizarImagen = async (req, res) => {
     const { imageUrl } = req.body;
 
