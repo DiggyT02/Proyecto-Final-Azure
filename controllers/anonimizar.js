@@ -36,14 +36,13 @@ exports.anonimizarTexto = async (req, res) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            return res.status(500).json({ error: errorData?.error?.message || 'error al llamar a azure' });
+            
+            return res.status(500).json({ message:'error al llamar a azure'});
         }
 
         const data = await response.json();
 
-        
-
+    
         if (data.results.errors?.length > 0) {
             return res.status(500).json({ error: data.results.errors[0]?.error?.message || 'error en el documento' });
         }
