@@ -42,6 +42,8 @@ exports.anonimizarTexto = async (req, res) => {
 
         const data = await response.json();
 
+        
+
         if (data.results.errors?.length > 0) {
             return res.status(500).json({ error: data.results.errors[0]?.error?.message || 'error en el documento' });
         }

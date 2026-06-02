@@ -52,7 +52,7 @@
 
     .nav-item-btn:hover               { background: #ffffff11; color: #fff; }
     .nav-item-btn.active              { color: #fff; border-left: 3px solid; }
-    .nav-item-btn.active.dota         { background: #dc354522; border-left-color: #dc3545; }
+    
     .nav-item-btn.active.resumen      { background: #0d6efd22; border-left-color: #0d6efd; }
     .nav-item-btn.active.anonimizar   { background: #19875422; border-left-color: #198754; }
     .nav-item-btn.active.sentimientos { background: #fd7e1422; border-left-color: #fd7e14; }
@@ -118,9 +118,6 @@
   <aside class="sidebar">
     <div class="sidebar-title">Azure IA</div>
 
-    <button class="nav-item-btn dota active" onclick="mostrarVista('dota', this)">
-      Chatbot Dota 2
-    </button>
 
     <button class="nav-item-btn resumen" onclick="mostrarVista('resumen', this)">
        Resumidor de Texto
@@ -142,40 +139,6 @@
   <!-- ── Contenido principal ── -->
   <div class="main">
 
-    <div class="main-header" id="main-header">Chatbot Dota 2</div>
-
-    <!-- Vista: Dota 2 -->
-    <div id="vista-dota" class="view active">
-      <div class="card shadow-sm" style="max-width: 640px;">
-
-        <div class="card-header bg-danger text-white fw-bold d-flex justify-content-between align-items-center">
-          <span>Asistente Dota 2</span>
-          <small id="tokens-badge" class="badge bg-light text-dark">tokens: 0</small>
-        </div>
-
-        <div class="card-body">
-          <div id="mensajes" class="border rounded bg-white p-3 mb-3">
-            <div class="msg-bot">
-              hola!! soy tu asistente de dota 2, preguntame lo que quieras sobre el juego
-            </div>
-          </div>
-
-          <div class="input-group mb-2">
-            <input
-              type="text"
-              id="input-usuario"
-              class="form-control"
-              placeholder="escribe tu pregunta..."
-              onkeydown="if(event.key==='Enter') enviar()"
-            />
-            <button id="btn-enviar" class="btn btn-danger fw-bold" onclick="enviar()">Enviar</button>
-          </div>
-
-          <div id="estado" class="text-muted text-center" style="font-size:12px; min-height:16px;"></div>
-        </div>
-
-      </div>
-    </div>
 
     <!-- Vista: Resumidor -->
     <div id="vista-resumen" class="view">
@@ -336,14 +299,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../frontjs/bot-dota.js"></script>
 <script src="../frontjs/resumen.js"></script>
 <script src="../frontjs/anonimizar.js"></script>
 <script src="../frontjs/sentimientos.js"></script>
 <script src="../frontjs/vision.js"></script>
 <script>
   const titulos = {
-    dota:         'Chatbot Dota 2',
+    
     resumen:      'Resumidor de Texto',
     anonimizar:   'Anonimizador de Datos',
     sentimientos: 'Análisis de Sentimientos',
