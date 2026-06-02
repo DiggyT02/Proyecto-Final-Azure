@@ -1,19 +1,21 @@
 async function anonimizar() {
-    const textoEl   = document.getElementById('texto-pii');
-    const texto     = textoEl.value.trim();
+    const textoEl = document.getElementById('texto-pii');
+    const texto   = textoEl.value.trim();
     if (!texto) return;
 
-    const btn             = document.getElementById('btn-anonimizar');
-    const estadoEl        = document.getElementById('estado-anonimizar');
-    const resultadoEl     = document.getElementById('resultado-anonimizado');
-    const entidadesEl     = document.getElementById('lista-entidades');
+    const btn         = document.getElementById('btn-anonimizar');
+    const estadoEl    = document.getElementById('estado-anonimizar');
+    const resultadoEl = document.getElementById('resultado-anonimizado');
+    const entidadesEl = document.getElementById('lista-entidades');
 
-    btn.disabled          = true;
-    estadoEl.textContent  = 'procesando...';
-    resultadoEl.textContent = '';
-    entidadesEl.innerHTML = '';
+    btn.disabled             = true;
+    btn.innerHTML            = '<span class="spinner"></span> Procesando...';
+    estadoEl.textContent     = '';
+    resultadoEl.textContent  = '';
+    entidadesEl.innerHTML    = '';
 
     try {
+        // La petición va al backend Express; la API key nunca sale del servidor
         const res = await fetch('/api/anonimizar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -23,26 +25,32 @@ async function anonimizar() {
         const data = await res.json();
 
         if (!res.ok) {
-            estadoEl.textContent = 'error: ' + (data.error || 'algo salio mal');
-            btn.disabled = false;
+            estadoEl.textContent = 'Error: ' + (data.error || 'algo salió mal');
+            btn.disabled  = false;
+            btn.textContent = 'Anonimizar';
             return;
         }
 
+        // data.textoAnonimizado: texto con los datos sensibles reemplazados por ***
         resultadoEl.textContent = data.textoAnonimizado;
 
+        // data.entidades: lo que Azure detectó como sensible (nombre, email, DNI, etc.)
         if (data.entidades?.length > 0) {
             entidadesEl.innerHTML = data.entidades.map(e =>
-                `<span class="badge bg-secondary me-1 mb-1">${e.category}: <strong>${e.text}</strong></span>`
+                `<span class="tag-pill">${e.category}: <strong>${e.text}</strong></span>`
             ).join('');
         } else {
-            entidadesEl.innerHTML = '<span class="text-muted" style="font-size:13px">no se detectaron entidades sensibles</span>';
+            entidadesEl.innerHTML = `<span style="font-size:12px; color:var(--text-secondary)">
+                No se detectaron entidades sensibles
+            </span>`;
         }
 
-        estadoEl.textContent = 'listo!';
+        estadoEl.textContent = 'Completado';
 
     } catch (e) {
-        estadoEl.textContent = 'no se pudo conectar con el servidor';
+        estadoEl.textContent = 'No se pudo conectar con el servidor';
     }
 
-    btn.disabled = false;
+    btn.disabled    = false;
+    btn.textContent = 'Anonimizar';
 }

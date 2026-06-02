@@ -1,302 +1,707 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Azure IA</title>
+  <title>Azure IA Studio</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    html, body { height: 100%; margin: 0; }
 
-    .layout {
-      display: flex;
-      height: 100vh;
+    /* ═══════════════════════════════════════
+       VARIABLES DE TEMA (claro / oscuro)
+    ═══════════════════════════════════════ */
+    :root {
+      --bg:              #f0f4f8;
+      --sidebar-bg:      #0f1b2d;
+      --card-bg:         #ffffff;
+      --card-border:     #e2e8f0;
+      --text-primary:    #1a202c;
+      --text-secondary:  #64748b;
+      --header-bg:       #ffffff;
+      --header-border:   #e2e8f0;
+      --input-bg:        #ffffff;
+      --input-border:    #d1d5db;
+      --muted-bg:        #f8fafc;
+      --t: 0.25s ease;
     }
 
-    /* ── Sidebar ── */
+    [data-theme="dark"] {
+      --bg:              #0d1117;
+      --sidebar-bg:      #090e17;
+      --card-bg:         #161d2a;
+      --card-border:     #1e2d42;
+      --text-primary:    #e2e8f0;
+      --text-secondary:  #8899a6;
+      --header-bg:       #0f1520;
+      --header-border:   #1e2d42;
+      --input-bg:        #1a2236;
+      --input-border:    #263348;
+      --muted-bg:        #1a2236;
+    }
+
+    /* ═══════════════════════════════════════
+       BASE
+    ═══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      transition: background var(--t), color var(--t);
+    }
+
+    .layout { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ═══════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════ */
     .sidebar {
-      width: 240px;
-      min-width: 240px;
-      background: #1a1a2e;
+      width: 220px;
+      min-width: 220px;
+      background: var(--sidebar-bg);
       display: flex;
       flex-direction: column;
-      padding: 24px 16px;
-      gap: 8px;
+      padding: 20px 12px 16px;
+      gap: 2px;
+      transition: background var(--t);
+      border-right: 1px solid #ffffff08;
     }
 
-    .sidebar-title {
-      color: #fff;
-      font-size: 18px;
-      font-weight: 700;
-      padding: 0 8px 20px;
-      border-bottom: 1px solid #ffffff22;
+    .sidebar-brand {
+      padding: 4px 10px 18px;
+      border-bottom: 1px solid #ffffff10;
       margin-bottom: 8px;
     }
 
-    .nav-item-btn {
+    .brand-name {
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-sub {
+      color: #ffffff35;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+    }
+
+    .nav-label {
+      color: #ffffff28;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      padding: 10px 10px 4px;
+    }
+
+    .nav-btn {
       display: flex;
       align-items: center;
       gap: 10px;
       background: none;
       border: none;
-      color: #adb5bd;
-      font-size: 14px;
+      color: #7a8fa6;
+      font-size: 13px;
       font-weight: 500;
-      padding: 10px 12px;
+      padding: 9px 10px;
       border-radius: 8px;
       width: 100%;
       text-align: left;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      position: relative;
+      transition: background 0.15s, color 0.15s, transform 0.15s;
     }
 
-    .nav-item-btn:hover               { background: #ffffff11; color: #fff; }
-    .nav-item-btn.active              { color: #fff; border-left: 3px solid; }
-    
-    .nav-item-btn.active.resumen      { background: #0d6efd22; border-left-color: #0d6efd; }
-    .nav-item-btn.active.anonimizar   { background: #19875422; border-left-color: #198754; }
-    .nav-item-btn.active.sentimientos { background: #fd7e1422; border-left-color: #fd7e14; }
-    .nav-item-btn.active.vision       { background: #6f42c122; border-left-color: #6f42c1; }
+    .nav-btn:hover {
+      background: #ffffff0d;
+      color: #fff;
+      transform: translateX(2px);
+    }
 
-    /* ── Main ── */
+    .nav-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      background: #ffffff0d;
+      transition: background 0.15s;
+    }
+
+    /* Acento de color por servicio */
+    .nav-btn.resumen      { --accent: #3b82f6; }
+    .nav-btn.anonimizar   { --accent: #10b981; }
+    .nav-btn.sentimientos { --accent: #f59e0b; }
+    .nav-btn.vision       { --accent: #8b5cf6; }
+
+    .nav-btn.active {
+      background: #ffffff0f;
+      color: #fff;
+    }
+
+    .nav-btn.active .nav-icon { background: var(--accent); }
+
+    /* Indicador vertical activo */
+    .nav-btn.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 20%;
+      height: 60%; width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: var(--accent);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid #ffffff0f;
+    }
+
+    .sidebar-footer-text {
+      color: #ffffff20;
+      font-size: 10px;
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    /* ═══════════════════════════════════════
+       MAIN
+    ═══════════════════════════════════════ */
     .main {
       flex: 1;
-      overflow-y: auto;
-      background: #f8f9fa;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+      transition: background var(--t);
     }
 
-    .main-header {
-      background: #fff;
-      border-bottom: 1px solid #dee2e6;
-      padding: 16px 28px;
-      font-size: 16px;
+    /* ── Topbar ── */
+    .topbar {
+      height: 54px;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--header-border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      transition: background var(--t), border-color var(--t);
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+
+    .topbar-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent-color, #3b82f6);
+      transition: background 0.2s;
+    }
+
+    .topbar-title {
+      font-size: 14px;
       font-weight: 600;
-      color: #212529;
+      color: var(--text-primary);
     }
 
-    .view          { display: none; padding: 28px; flex: 1; }
-    .view.active   { display: flex; flex-direction: column; }
-
-    /* ── Chat ── */
-    #mensajes {
-      height: 380px;
-      overflow-y: auto;
+    /* Botón toggle de tema */
+    .theme-btn {
+      background: var(--muted-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 5px 14px 5px 10px;
+      cursor: pointer;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.2s;
     }
 
-    .msg-bot {
-      background: #e9ecef;
+    .theme-btn:hover { color: var(--text-primary); }
+
+    /* ── Content ── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    /* ═══════════════════════════════════════
+       VISTAS — animación de entrada
+    ═══════════════════════════════════════ */
+    .view           { display: none; }
+    .view.active    { display: block; animation: viewIn 0.22s ease; }
+
+    @keyframes viewIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════
+       SERVICE CARD
+    ═══════════════════════════════════════ */
+    .s-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      max-width: 660px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 8px 24px rgba(0,0,0,.04);
+      transition: background var(--t), border-color var(--t);
+    }
+
+    .s-card-header {
+      padding: 18px 22px 16px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: border-color var(--t);
+    }
+
+    .s-card-icon {
+      width: 40px; height: 40px;
       border-radius: 10px;
-      border-top-left-radius: 2px;
-      padding: 8px 12px;
-      max-width: 78%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .s-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .s-card-sub {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .s-card-body { padding: 22px; }
+
+    /* ═══════════════════════════════════════
+       FORM ELEMENTS
+    ═══════════════════════════════════════ */
+    .form-control {
+      background: var(--input-bg) !important;
+      border-color: var(--input-border) !important;
+      color: var(--text-primary) !important;
+      border-radius: 9px !important;
+      font-size: 13.5px !important;
+      transition: background var(--t), border-color var(--t), color var(--t) !important;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 3px rgba(79,110,247,0.15) !important;
+      border-color: #4f6ef7 !important;
+    }
+
+    .form-control::placeholder { color: var(--text-secondary) !important; }
+    textarea.form-control { resize: vertical; }
+
+    /* ═══════════════════════════════════════
+       BOTONES DE ACCIÓN
+    ═══════════════════════════════════════ */
+    .btn-action {
+      width: 100%;
+      padding: 11px;
+      border-radius: 9px;
+      font-size: 13.5px;
+      font-weight: 600;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: filter 0.2s, transform 0.12s, box-shadow 0.2s;
+    }
+
+    .btn-action:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(0,0,0,.2);
+    }
+
+    .btn-action:active:not(:disabled)  { transform: translateY(0); }
+    .btn-action:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+
+    .btn-resumen      { background: #3b82f6; }
+    .btn-anonimizar   { background: #10b981; }
+    .btn-sentimientos { background: #f59e0b; }
+    .btn-vision       { background: #8b5cf6; }
+
+    .btn-add-row {
+      background: var(--muted-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-add-row:hover { color: var(--text-primary); border-color: var(--text-secondary); }
+
+    .btn-remove-row {
+      background: none;
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      width: 30px; height: 30px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
       align-self: flex-start;
-      font-size: 14px;
+      margin-top: 5px;
+      transition: all 0.15s;
     }
 
-    .msg-user {
-      background: #0d6efd;
-      color: white;
-      border-radius: 10px;
-      border-top-right-radius: 2px;
-      padding: 8px 12px;
-      max-width: 78%;
-      align-self: flex-end;
-      font-size: 14px;
+    .btn-remove-row:hover { background: #ef444418; border-color: #ef4444; color: #ef4444; }
+
+    /* ═══════════════════════════════════════
+       ESTADO / STATUS
+    ═══════════════════════════════════════ */
+    .status-text {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      text-align: center;
+      min-height: 18px;
+      margin: 9px 0;
     }
+
+    /* Spinner de carga */
+    .spinner {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border: 2px solid #ffffff50;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ═══════════════════════════════════════
+       RESULT BOXES
+    ═══════════════════════════════════════ */
+    .result-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--text-secondary);
+      margin-bottom: 7px;
+    }
+
+    .result-box {
+      background: var(--muted-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 9px;
+      padding: 14px 16px;
+      font-size: 13.5px;
+      min-height: 52px;
+      color: var(--text-primary);
+      line-height: 1.65;
+      transition: background var(--t), border-color var(--t), color var(--t);
+      word-break: break-word;
+    }
+
+    /* ═══════════════════════════════════════
+       BADGES / PILLS
+    ═══════════════════════════════════════ */
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--muted-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      font-size: 11.5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin: 2px 3px 2px 0;
+      transition: background var(--t);
+    }
+
+    .tag-pill strong { color: var(--text-primary); }
+
+    /* ═══════════════════════════════════════
+       SENTIMIENTOS — resultado card
+    ═══════════════════════════════════════ */
+    .sent-card {
+      background: var(--muted-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      animation: viewIn 0.2s ease;
+      transition: background var(--t), border-color var(--t);
+    }
+
+    .sent-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    .sent-pill.positive { background: #10b98118; color: #10b981; }
+    .sent-pill.negative { background: #ef444418; color: #ef4444; }
+    .sent-pill.neutral  { background: #6b728018; color: #6b7280; }
+    .sent-pill.mixed    { background: #f59e0b18; color: #f59e0b; }
+
+    .sent-scores { font-size: 11.5px; display: flex; gap: 14px; }
+    .sent-scores .pos { color: #10b981; }
+    .sent-scores .neg { color: #ef4444; }
+    .sent-scores .neu { color: var(--text-secondary); }
+
+    /* ═══════════════════════════════════════
+       VISION — objetos list
+    ═══════════════════════════════════════ */
+    .obj-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-primary);
+      background: var(--muted-bg);
+      border: 1px solid var(--card-border);
+      margin-bottom: 6px;
+      animation: viewIn 0.2s ease;
+    }
+
+    .obj-coords {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: monospace;
+    }
+
+    /* Image preview */
+    #preview-imagen {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 18px;
+      animation: viewIn 0.3s ease;
+    }
+
+    /* ═══════════════════════════════════════
+       SCROLLBAR
+    ═══════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #88a0b830; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #88a0b860; }
+
   </style>
 </head>
 <body>
 
 <div class="layout">
 
-  <!-- ── Sidebar ── -->
+  <!-- ══════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════ -->
   <aside class="sidebar">
-    <div class="sidebar-title">Azure IA</div>
 
+    <div class="sidebar-brand">
+      <div class="brand-name">Azure IA</div>
+      <div class="brand-sub">Studio</div>
+    </div>
 
-    <button class="nav-item-btn resumen" onclick="mostrarVista('resumen', this)">
-       Resumidor de Texto
+    <div class="nav-label">Servicios</div>
+
+    <button class="nav-btn resumen active" onclick="mostrarVista('resumen', this)">
+      <span class="nav-icon">📄</span> Resumidor
     </button>
 
-    <button class="nav-item-btn anonimizar" onclick="mostrarVista('anonimizar', this)">
-       Anonimizador de Datos
+    <button class="nav-btn anonimizar" onclick="mostrarVista('anonimizar', this)">
+      <span class="nav-icon">🔒</span> Anonimizador
     </button>
 
-    <button class="nav-item-btn sentimientos" onclick="mostrarVista('sentimientos', this)">
-      Análisis de Sentimientos
+    <button class="nav-btn sentimientos" onclick="mostrarVista('sentimientos', this)">
+      <span class="nav-icon">💬</span> Sentimientos
     </button>
 
-    <button class="nav-item-btn vision" onclick="mostrarVista('vision', this)">
-      Detección de Imágenes
+    <button class="nav-btn vision" onclick="mostrarVista('vision', this)">
+      <span class="nav-icon">🖼️</span> Visión IA
     </button>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">Azure Cognitive Services</div>
+    </div>
+
   </aside>
 
-  <!-- ── Contenido principal ── -->
+  <!-- ══════════════════════════════════
+       MAIN
+  ══════════════════════════════════ -->
   <div class="main">
 
-
-    <!-- Vista: Resumidor -->
-    <div id="vista-resumen" class="view">
-      <div class="card shadow-sm" style="max-width: 640px;">
-
-        <div class="card-header bg-primary text-white fw-bold">
-          Resumidor de Texto (Azure Language)
-        </div>
-
-        <div class="card-body">
-          <textarea
-            id="texto-largo"
-            class="form-control mb-2"
-            rows="6"
-            placeholder="pega aqui el texto que quieres resumir..."
-          ></textarea>
-
-          <button id="btn-resumir" class="btn btn-primary fw-bold w-100 mb-2" onclick="resumir()">
-            Resumir
-          </button>
-
-          <div id="estado-resumen" class="text-muted text-center mb-2" style="font-size:12px; min-height:16px;"></div>
-
-          <div id="resultado-resumen" class="border rounded bg-white p-3" style="min-height:60px; font-size:14px;"></div>
-        </div>
-
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-dot" id="topbar-dot"></div>
+        <span class="topbar-title" id="main-header">Resumidor de Texto</span>
       </div>
+      <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">
+        🌙 Modo oscuro
+      </button>
     </div>
 
-    <!-- Vista: Anonimizador -->
-    <div id="vista-anonimizar" class="view">
-      <div class="card shadow-sm" style="max-width: 640px;">
+    <!-- Content -->
+    <div class="content">
 
-        <div class="card-header bg-success text-white fw-bold">
-          Anonimizador de Datos (Azure Language)
-        </div>
-
-        <div class="card-body">
-          <textarea
-            id="texto-pii"
-            class="form-control mb-2"
-            rows="5"
-            placeholder="pega aqui el texto con datos sensibles (nombres, DNI, teléfonos, emails...)..."
-          ></textarea>
-
-          <button id="btn-anonimizar" class="btn btn-success fw-bold w-100 mb-2" onclick="anonimizar()">
-            Anonimizar
-          </button>
-
-          <div id="estado-anonimizar" class="text-muted text-center mb-2" style="font-size:12px; min-height:16px;"></div>
-
-          <div class="mb-2">
-            <label class="form-label fw-semibold" style="font-size:13px">Texto anonimizado:</label>
-            <div id="resultado-anonimizado" class="border rounded bg-white p-3" style="min-height:48px; font-size:14px; word-break:break-word;"></div>
-          </div>
-
-          <div>
-            <label class="form-label fw-semibold" style="font-size:13px">Entidades detectadas:</label>
-            <div id="lista-entidades" class="p-2" style="min-height:32px;"></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Vista: Análisis de Sentimientos -->
-    <div id="vista-sentimientos" class="view">
-      <div class="card shadow-sm" style="max-width: 640px;">
-
-        <div class="card-header fw-bold text-white" style="background:#fd7e14">
-          Análisis de Sentimientos (Azure Language)
-        </div>
-
-        <div class="card-body">
-
-          <div id="contenedor-textos" class="mb-2">
-            <div class="d-flex gap-2 mb-2" id="fila-1">
-              <textarea class="form-control texto-sentimiento" rows="2"
-                placeholder="Texto 1..."></textarea>
+      <!-- ── Vista: Resumidor ── -->
+      <div id="vista-resumen" class="view active">
+        <div class="s-card">
+          <div class="s-card-header">
+            <div class="s-card-icon" style="background:#3b82f618">📄</div>
+            <div>
+              <div class="s-card-title">Resumidor de Texto</div>
+              <div class="s-card-sub">Azure Language · Extractive Summarization</div>
             </div>
           </div>
-
-          <div class="d-flex gap-2 mb-3">
-            <button class="btn btn-outline-secondary btn-sm" onclick="agregarTexto()">
-              + Añadir texto
+          <div class="s-card-body">
+            <textarea id="texto-largo" class="form-control mb-3" rows="6"
+              placeholder="Pega aquí el texto que quieres resumir..."></textarea>
+            <button id="btn-resumir" class="btn-action btn-resumen mb-1" onclick="resumir()">
+              Resumir
             </button>
-            <small class="text-muted align-self-center">máximo 5 textos</small>
+            <div id="estado-resumen" class="status-text"></div>
+            <div class="result-label">Resumen generado</div>
+            <div id="resultado-resumen" class="result-box"></div>
           </div>
-
-          <button id="btn-analizar" class="btn fw-bold w-100 mb-2 text-white"
-            style="background:#fd7e14; border-color:#fd7e14" onclick="analizarSentimientos()">
-            Analizar
-          </button>
-
-          <div id="estado-sentimientos" class="text-muted text-center mb-2"
-            style="font-size:12px; min-height:16px;"></div>
-
-          <div id="resultado-sentimientos"></div>
         </div>
-
       </div>
-    </div>
 
-    <!-- Vista: Detección de Imágenes -->
-    <div id="vista-vision" class="view">
-      <div class="card shadow-sm" style="max-width: 680px;">
-
-        <div class="card-header fw-bold text-white" style="background:#6f42c1">
-          Detección de Imágenes (Azure Computer Vision)
+      <!-- ── Vista: Anonimizador ── -->
+      <div id="vista-anonimizar" class="view">
+        <div class="s-card">
+          <div class="s-card-header">
+            <div class="s-card-icon" style="background:#10b98118">🔒</div>
+            <div>
+              <div class="s-card-title">Anonimizador de Datos</div>
+              <div class="s-card-sub">Azure Language · PII Entity Recognition</div>
+            </div>
+          </div>
+          <div class="s-card-body">
+            <textarea id="texto-pii" class="form-control mb-3" rows="5"
+              placeholder="Pega aquí el texto con datos sensibles (nombres, DNI, teléfonos, emails...)..."></textarea>
+            <button id="btn-anonimizar" class="btn-action btn-anonimizar mb-1" onclick="anonimizar()">
+              Anonimizar
+            </button>
+            <div id="estado-anonimizar" class="status-text"></div>
+            <div class="mb-3">
+              <div class="result-label">Texto anonimizado</div>
+              <div id="resultado-anonimizado" class="result-box"></div>
+            </div>
+            <div>
+              <div class="result-label">Entidades detectadas</div>
+              <div id="lista-entidades" style="min-height:28px; padding:2px 0;"></div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="card-body">
-
-          <div class="input-group mb-3">
-            <input
-              type="text"
-              id="input-imagen-url"
-              class="form-control"
-              placeholder="pega aqui la URL de la imagen..."
-              onkeydown="if(event.key==='Enter') analizarImagen()"
-            />
-            <button id="btn-vision" class="btn fw-bold text-white"
-              style="background:#6f42c1; border-color:#6f42c1" onclick="analizarImagen()">
+      <!-- ── Vista: Sentimientos ── -->
+      <div id="vista-sentimientos" class="view">
+        <div class="s-card">
+          <div class="s-card-header">
+            <div class="s-card-icon" style="background:#f59e0b18">💬</div>
+            <div>
+              <div class="s-card-title">Análisis de Sentimientos</div>
+              <div class="s-card-sub">Azure Language · Sentiment Analysis</div>
+            </div>
+          </div>
+          <div class="s-card-body">
+            <div id="contenedor-textos" class="mb-2">
+              <div class="d-flex gap-2 mb-2" id="fila-1">
+                <textarea class="form-control texto-sentimiento" rows="2"
+                  placeholder="Texto 1..."></textarea>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <button class="btn-add-row" onclick="agregarTexto()">+ Añadir texto</button>
+              <span style="font-size:11.5px; color:var(--text-secondary)">máximo 5 textos</span>
+            </div>
+            <button id="btn-analizar" class="btn-action btn-sentimientos mb-1" onclick="analizarSentimientos()">
               Analizar
             </button>
+            <div id="estado-sentimientos" class="status-text"></div>
+            <div id="resultado-sentimientos"></div>
           </div>
-
-          <div id="estado-vision" class="text-muted text-center mb-2"
-            style="font-size:12px; min-height:16px;"></div>
-
-          <img id="preview-imagen"
-            class="img-fluid rounded mb-3 d-none"
-            style="max-height:260px; object-fit:cover; width:100%"
-            alt="preview"
-          />
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold" style="font-size:13px">Descripción:</label>
-            <div id="resultado-descripcion" class="border rounded bg-white p-2"
-              style="min-height:44px; font-size:14px;"></div>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label fw-semibold" style="font-size:13px">Etiquetas detectadas:</label>
-            <div id="resultado-etiquetas" class="p-1" style="min-height:32px;"></div>
-          </div>
-
-          <div>
-            <label class="form-label fw-semibold" style="font-size:13px">Objetos y posición:</label>
-            <ul id="resultado-objetos" class="list-group" style="min-height:32px;"></ul>
-          </div>
-
         </div>
       </div>
-    </div>
 
-  </div>
-</div>
+      <!-- ── Vista: Visión IA ── -->
+      <div id="vista-vision" class="view">
+        <div class="s-card" style="max-width:700px">
+          <div class="s-card-header">
+            <div class="s-card-icon" style="background:#8b5cf618">🖼️</div>
+            <div>
+              <div class="s-card-title">Detección de Imágenes</div>
+              <div class="s-card-sub">Azure Computer Vision · v3.2</div>
+            </div>
+          </div>
+          <div class="s-card-body">
+            <div class="d-flex gap-2 mb-3">
+              <input type="text" id="input-imagen-url" class="form-control"
+                placeholder="Pega aquí la URL pública de la imagen..."
+                onkeydown="if(event.key==='Enter') analizarImagen()" />
+              <button id="btn-vision" class="btn-action btn-vision"
+                style="width:auto; padding:10px 20px; white-space:nowrap"
+                onclick="analizarImagen()">Analizar</button>
+            </div>
+            <div id="estado-vision" class="status-text"></div>
+            <img id="preview-imagen" class="d-none" alt="preview" />
+            <div class="mb-3">
+              <div class="result-label">Descripción</div>
+              <div id="resultado-descripcion" class="result-box"></div>
+            </div>
+            <div class="mb-3">
+              <div class="result-label">Etiquetas detectadas</div>
+              <div id="resultado-etiquetas" style="min-height:28px; padding:2px 0;"></div>
+            </div>
+            <div>
+              <div class="result-label">Objetos y posición</div>
+              <div id="resultado-objetos" style="min-height:28px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../frontjs/resumen.js"></script>
@@ -304,21 +709,45 @@
 <script src="../frontjs/sentimientos.js"></script>
 <script src="../frontjs/vision.js"></script>
 <script>
-  const titulos = {
-    
-    resumen:      'Resumidor de Texto',
-    anonimizar:   'Anonimizador de Datos',
-    sentimientos: 'Análisis de Sentimientos',
-    vision:       'Detección de Imágenes'
+
+  /* ── Configuración de cada vista ── */
+  const VISTAS = {
+    resumen:      { titulo: 'Resumidor de Texto',      color: '#3b82f6' },
+    anonimizar:   { titulo: 'Anonimizador de Datos',   color: '#10b981' },
+    sentimientos: { titulo: 'Análisis de Sentimientos', color: '#f59e0b' },
+    vision:       { titulo: 'Detección de Imágenes',   color: '#8b5cf6' }
   };
 
-  function mostrarVista(nombre, btnClickeado) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-item-btn').forEach(b => b.classList.remove('active'));
+  const topbarDot  = document.getElementById('topbar-dot');
+  const mainHeader = document.getElementById('main-header');
+
+  function mostrarVista(nombre, btn) {
+    document.querySelectorAll('.view').forEach(v    => v.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('vista-' + nombre).classList.add('active');
-    btnClickeado.classList.add('active');
-    document.getElementById('main-header').textContent = titulos[nombre];
+    btn.classList.add('active');
+    const cfg = VISTAS[nombre];
+    mainHeader.textContent   = cfg.titulo;
+    topbarDot.style.background = cfg.color;
   }
+
+  /* ── Toggle de tema claro / oscuro ── */
+  const html     = document.documentElement;
+  const themeBtn = document.getElementById('theme-btn');
+
+  function toggleTheme() {
+    const dark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', dark ? 'light' : 'dark');
+    themeBtn.textContent = dark ? '🌙 Modo oscuro' : '☀️ Modo claro';
+    localStorage.setItem('theme', dark ? 'light' : 'dark');
+  }
+
+  // Restaurar la preferencia guardada en localStorage
+  if (localStorage.getItem('theme') === 'dark') {
+    html.setAttribute('data-theme', 'dark');
+    themeBtn.textContent = '☀️ Modo claro';
+  }
+
 </script>
 
 </body>

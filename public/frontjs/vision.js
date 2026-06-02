@@ -1,50 +1,59 @@
+// Cada función "build" construye un fragmento de HTML con responsabilidad única
+
 function buildDescripcionHTML(descripcion) {
-    if (!descripcion) return '<p class="text-muted mb-0" style="font-size:13px">sin descripción disponible</p>';
+    if (!descripcion) return '<span style="font-size:13px; color:var(--text-secondary)">Sin descripción disponible</span>';
     const confianza = (descripcion.confianza * 100).toFixed(1);
     return `
-        <p class="mb-1" style="font-size:14px">${descripcion.texto}</p>
-        <small class="text-muted">Confianza: ${confianza}%</small>`;
+        <p style="font-size:13.5px; margin-bottom:4px; color:var(--text-primary)">${descripcion.texto}</p>
+        <small style="color:var(--text-secondary)">Confianza: ${confianza}%</small>`;
 }
 
 function buildEtiquetasHTML(etiquetas) {
-    if (!etiquetas.length) return '<span class="text-muted" style="font-size:13px">sin etiquetas</span>';
+    if (!etiquetas.length) return '<span style="font-size:12px; color:var(--text-secondary)">Sin etiquetas</span>';
     return etiquetas.map(e => {
         const pct = (e.confianza * 100).toFixed(1);
-        return `<span class="badge bg-secondary me-1 mb-1" title="${pct}% confianza">${e.nombre} ${pct}%</span>`;
+        // title muestra el porcentaje al hacer hover
+        return `<span class="tag-pill" title="${pct}% confianza">${e.nombre} <strong>${pct}%</strong></span>`;
     }).join('');
 }
 
 function buildObjetosHTML(objetos) {
-    if (!objetos.length) return '<p class="text-muted mb-0" style="font-size:13px">no se detectaron objetos</p>';
-    return objetos.map(o =>
-        `<li class="list-group-item py-1 px-2" style="font-size:13px">
-            <strong>${o.nombre}</strong>
-            <span class="text-muted ms-2">x:${o.x} y:${o.y} w:${o.w} h:${o.h}</span>
-        </li>`
+    if (!objetos.length) return '<span style="font-size:12px; color:var(--text-secondary)">No se detectaron objetos</span>';
+    // x, y = posición de la esquina superior izquierda en píxeles
+    // w, h  = ancho y alto del rectángulo que rodea el objeto
+    return objetos.map(o => `
+        <div class="obj-item">
+            <strong style="font-size:13px">${o.nombre}</strong>
+            <span class="obj-coords">x:${o.x} y:${o.y} &nbsp; w:${o.w} h:${o.h}</span>
+        </div>`
     ).join('');
 }
 
 async function analizarImagen() {
-    const urlEl       = document.getElementById('input-imagen-url');
-    const imageUrl    = urlEl.value.trim();
+    const urlEl    = document.getElementById('input-imagen-url');
+    const imageUrl = urlEl.value.trim();
     if (!imageUrl) return;
 
-    const btn         = document.getElementById('btn-vision');
-    const estadoEl    = document.getElementById('estado-vision');
-    const previstaEl  = document.getElementById('preview-imagen');
-    const descEl      = document.getElementById('resultado-descripcion');
-    const tagsEl      = document.getElementById('resultado-etiquetas');
-    const objEl       = document.getElementById('resultado-objetos');
+    const btn        = document.getElementById('btn-vision');
+    const estadoEl   = document.getElementById('estado-vision');
+    const previstaEl = document.getElementById('preview-imagen');
+    const descEl     = document.getElementById('resultado-descripcion');
+    const tagsEl     = document.getElementById('resultado-etiquetas');
+    const objEl      = document.getElementById('resultado-objetos');
 
     btn.disabled         = true;
-    estadoEl.textContent = 'analizando imagen...';
-    previstaEl.src       = '';
+    btn.innerHTML        = '<span class="spinner"></span> Analizando...';
+    estadoEl.textContent = '';
+
+    // Limpiamos resultados anteriores
+    previstaEl.src = '';
     previstaEl.classList.add('d-none');
-    descEl.innerHTML     = '';
-    tagsEl.innerHTML     = '';
-    objEl.innerHTML      = '';
+    descEl.innerHTML = '';
+    tagsEl.innerHTML = '';
+    objEl.innerHTML  = '';
 
     try {
+        // Solo enviamos la URL; Azure descarga la imagen desde su lado
         const res = await fetch('/api/vision', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -54,11 +63,13 @@ async function analizarImagen() {
         const data = await res.json();
 
         if (!res.ok) {
-            estadoEl.textContent = 'error: ' + (data.error || 'algo salio mal');
-            btn.disabled = false;
+            estadoEl.textContent = 'Error: ' + (data.error || 'algo salió mal');
+            btn.disabled  = false;
+            btn.textContent = 'Analizar';
             return;
         }
 
+        // Mostramos la imagen usando la misma URL que enviamos
         previstaEl.src = imageUrl;
         previstaEl.classList.remove('d-none');
 
@@ -66,11 +77,12 @@ async function analizarImagen() {
         tagsEl.innerHTML = buildEtiquetasHTML(data.etiquetas);
         objEl.innerHTML  = buildObjetosHTML(data.objetos);
 
-        estadoEl.textContent = 'análisis completado';
+        estadoEl.textContent = 'Análisis completado';
 
     } catch (e) {
-        estadoEl.textContent = 'no se pudo conectar con el servidor';
+        estadoEl.textContent = 'No se pudo conectar con el servidor';
     }
 
-    btn.disabled = false;
+    btn.disabled    = false;
+    btn.textContent = 'Analizar';
 }
