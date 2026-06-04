@@ -514,6 +514,47 @@
     }
 
     /* ═══════════════════════════════════════
+       EXTRACTOR DE ENTIDADES
+    ═══════════════════════════════════════ */
+    .nav-btn.entidades { --accent: #06b6d4; }
+    .btn-entidades     { background: #06b6d4; }
+
+    .entity-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 14px;
+      border-radius: 9px;
+      background: var(--muted-bg);
+      border: 1px solid var(--card-border);
+      margin-bottom: 7px;
+      animation: viewIn 0.2s ease;
+      transition: background var(--t), border-color var(--t);
+    }
+
+    .entity-main { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .entity-text { font-size: 13.5px; color: var(--text-primary); }
+
+    .entity-cat-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+
+    .entity-score {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: monospace;
+      white-space: nowrap;
+      margin-left: 8px;
+    }
+
+    /* select heredando estilos del form-control */
+    select.form-control { cursor: pointer; }
+
+    /* ═══════════════════════════════════════
        CHAT IA — burbujas de conversación
     ═══════════════════════════════════════ */
     .nav-btn.chat { --accent: #ec4899; }
@@ -616,6 +657,10 @@
 
     <button class="nav-btn vision" onclick="mostrarVista('vision', this)">
       <span class="nav-icon">🖼️</span> Visión IA
+    </button>
+
+    <button class="nav-btn entidades" onclick="mostrarVista('entidades', this)">
+      <span class="nav-icon">🔍</span> Entidades
     </button>
 
     <button class="nav-btn chat" onclick="mostrarVista('chat', this)">
@@ -766,6 +811,43 @@
         </div>
       </div>
 
+      <!-- ── Vista: Extractor de Entidades ── -->
+      <div id="vista-entidades" class="view">
+        <div class="s-card">
+          <div class="s-card-header">
+            <div class="s-card-icon" style="background:#06b6d418">🔍</div>
+            <div>
+              <div class="s-card-title">Extractor de Entidades</div>
+              <div class="s-card-sub">Azure Language · Entity Recognition</div>
+            </div>
+          </div>
+          <div class="s-card-body">
+            <textarea id="texto-entidades" class="form-control mb-3" rows="5"
+              placeholder="Pega aquí el texto del que quieres extraer entidades (nombres, fechas, lugares, teléfonos...)..."></textarea>
+            <div class="d-flex gap-2 mb-3 align-items-center">
+              <select id="filtro-categoria" class="form-control" style="max-width:210px">
+                <option value="Todas">Todas las categorías</option>
+                <option value="Person">Persona</option>
+                <option value="Organization">Organización</option>
+                <option value="Location">Lugar</option>
+                <option value="DateTime">Fecha / Hora</option>
+                <option value="Quantity">Cantidad</option>
+                <option value="PhoneNumber">Teléfono</option>
+                <option value="Email">Email</option>
+                <option value="Address">Dirección</option>
+                <option value="Product">Producto</option>
+                <option value="URL">URL</option>
+              </select>
+              <button id="btn-entidades" class="btn-action btn-entidades"
+                style="flex:1" onclick="extraerEntidades()">Extraer</button>
+            </div>
+            <div id="estado-entidades" class="status-text"></div>
+            <div class="result-label">Entidades detectadas</div>
+            <div id="resultado-entidades" style="min-height:52px;"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── Vista: Chat IA ── -->
       <div id="vista-chat" class="view">
         <div class="s-card" style="max-width:700px">
@@ -803,6 +885,7 @@
 <script src="../frontjs/anonimizar.js"></script>
 <script src="../frontjs/sentimientos.js"></script>
 <script src="../frontjs/vision.js"></script>
+<script src="../frontjs/entidades.js"></script>
 <script src="../frontjs/chat.js"></script>
 <script>
 
@@ -811,8 +894,9 @@
     resumen:      { titulo: 'Resumidor de Texto',      color: '#3b82f6' },
     anonimizar:   { titulo: 'Anonimizador de Datos',   color: '#10b981' },
     sentimientos: { titulo: 'Análisis de Sentimientos', color: '#f59e0b' },
-    vision:       { titulo: 'Detección de Imágenes',   color: '#8b5cf6' },
-    chat:         { titulo: 'Chat IA',                 color: '#ec4899' }
+    vision:     { titulo: 'Detección de Imágenes',    color: '#8b5cf6' },
+    entidades:  { titulo: 'Extractor de Entidades',   color: '#06b6d4' },
+    chat:       { titulo: 'Chat IA',                  color: '#ec4899' }
   };
 
   const topbarDot  = document.getElementById('topbar-dot');
